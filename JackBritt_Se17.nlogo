@@ -9,8 +9,8 @@
  ;; Last Revision 01/13/2017
 ;----------------------------------------------------------------------------------------------
   ;;
-  ;;
-  ;;Jack Britt Highschool
+  ;;      
+  ;;Jack Britt High School
   ;;Mrs. Kerry Humphrey 
   ;;Rithvik Annamaneni, Emmanuel Boitey, Jeffery Collins, Nathaniel Wellborn, Brian McGarry, Caleb Hancock, Madison Rinaldi
 ;---------------------------------------------------------------------------------------------- 
@@ -45,7 +45,7 @@
 
  ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ;;;;;;;;;
- ;;John;;
+ ;;John;;;
  ;;;;;;;;; 
      joldpx
      joldpy
@@ -55,7 +55,7 @@
      
  ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ;;;;;;;;;;
- ;;Zen;;
+ ;;Zen;;;;;
  ;;;;;;;;;;    
      
      ;the cordinates of a resource within sanic's radius
@@ -115,7 +115,7 @@
  ;;;;;;;;;;
  ;;Zen;;
  ;;;;;;;;;;
-    ;the coordinates of were the Zen left the spiral
+    ;the coordinates of where the Zen left the spiral
     teoldx
     teoldy
     
@@ -137,7 +137,7 @@
     
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ;;;;;;;;;;
-;;sara;;
+;;sara;;;;
 ;;;;;;;;;;  
 
    
@@ -147,7 +147,7 @@
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ;;;;;;;;;;
-;;becky;;
+;;becky;;;
 ;;;;;;;;;;  
      mbecluster
     bemclstrnd
@@ -481,12 +481,18 @@ to robot-control
    if pcolor != pink [set pcolor basecolor]
    if pcolor = pink [set pcolor red]
  ]
+ 
+    set beptimer (beptimer - 1)
+ if beptimer = 0 [
+   if pcolor != pink [set pcolor basecolor]
+   if pcolor = pink [set pcolor red]
+ ]
  ]
  
  
  ;makes these variables show on the moniters in the interface tab, 
  ;if the number is 1 then the variable is true, if the number is 2 then the variable is false
- ask sanic[
+ ask sanic[                       
 if (savep = true)
 [set msavep  1]
 if searching = true
@@ -511,7 +517,7 @@ if hunting = false
 
 
 ;makes sanic record its position when in the spiral
-;maybe a little too secure ;)
+
   ask sanic[
       if searching and not returning and hunting and not savep [
       set oldX xcor
@@ -548,6 +554,9 @@ ask john[J-move]
 ;;;;;;;;;;
 ;;Zen;;
 ;;;;;;;;;;
+  
+ ;makes the robot record its position when in the spiral 
+  
   ask zen[
       if tsearching and not treturning and thunting and not tsavep [
       set toldX xcor
@@ -563,8 +572,6 @@ ask john[J-move]
 
 
   
-;makes Zen record its position when in the spiral
-;maybe a little too secure ;)
  
   
      ;sets the patches woth resource to a state where they can be collected, or where they cant if a resource was already collected from that patch
@@ -599,7 +606,8 @@ if pcolor = baseColor[
 ;;;;;;;;;;
 ;;Becky;;
 ;;;;;;;;;;
-
+ ;makes these variables show on the moniters in the interface tab, 
+ ;if the number is 1 then the variable is true, if the number is 2 then the variable is false
  ask becky
 [if beclstrnd
  [set bemclstrnd 1]
@@ -616,6 +624,8 @@ if pcolor = baseColor[
 
 set bemrnum bernum
 ]
+
+;tells the robot to start moving and looking for rocks
 ask becky[be-move]
 
 
@@ -624,8 +634,11 @@ ask becky[be-move]
 ;;;;;;;;;;
 ;;Sara;;
 ;;;;;;;;;;
-
+;tells the robot to start moving and looking for rocks
 ask sara[Sa-move]
+
+;makes these variables show on the moniters in the interface tab, 
+;if the number is 1 then the variable is true, if the number is 2 then the variable is false
 ask sara
 [if clstrnd
  [set mclstrnd 1]
@@ -1200,8 +1213,8 @@ end
   
    if tsearching[
      
-     left random 15
-     right random 15
+     left random 25    ;allows a degree of change in the spiral
+     right random 25
      
      forward 1
      
@@ -1221,7 +1234,7 @@ end
    ]
   
    [
-   left 90
+   right 90
    set tmaxSteps tmaxsteps + 2
    set tsteps tmaxsteps
    ifelse tsavepd = 4
@@ -1360,16 +1373,18 @@ ifelse pcolor = green
 
 to lookforrocks
   ;; searching for rocks
-ask neighbors[
-  if pcolor = yellow[
-    set numberOfRocks  (numberOfRocks - 1)
+if ticks > 6 [ask halley[   ;ensures halley does not stall when picking up a rock within 2 patches around them
+    
+ if (any? patches with [rock = true] in-radius 2)[
+    
     set pcolor basecolor
-    ask myself [
+    ask halley [
       set H-searching false
       set H-returning true
       set shape "robot with rock"
     ]
   ]
+]
 ]
     end
 
@@ -1458,7 +1473,8 @@ to J-look-for-rocks
   
   
   
-   ask john[
+   ask john[ 
+     if ticks > 5[
   
 if jsearching = true[
     if (any? patches with [rock = true] in-radius 2)[
@@ -1469,7 +1485,7 @@ if jsearching = true[
      ask one-of patches with [pcolor = yellow] in-radius 2[ 
       set jtarget true 
      ]
-     ]
+      ]
       set joldpX ([pxcor]of one-of patches with [jtarget = true] in-radius 2)
       set joldpY ([pycor]of one-of patches with [jtarget = true] in-radius 2)      ;tries to get coordinates o a patch
   
@@ -1509,6 +1525,7 @@ if jsearching = true[
    ]
 ]
    ]
+]
     
    
     
@@ -1529,7 +1546,7 @@ to J-go-home
   
   ask john[
     
-    ifelse (pcolor = green) [
+    ifelse pxcor = 0 and pycor = 0 [
     
      set jreturning false
      set shape "robot"
@@ -1826,7 +1843,7 @@ end
 ;;move;;
 ;;;;;;;;
 to begonetimer
-   ask patch-here [ set beptimer pstimer]
+   ask patch-here [ set beptimer bepstimer]
   
 end
   
@@ -2030,7 +2047,7 @@ to be-go-home
 
     
     
-    ifelse (pxcor = 0) and (pycor = 0) [
+    ifelse pxcor = 0 and pycor = 0 [
     
      set bereturning false
      set shape "robot"
@@ -2302,7 +2319,7 @@ CHOOSER
 distribution
 distribution
 "cross" "random" "clusters" "large clusters" "random + cross" "clusters + cross" "clusters + large clusters" "large clusters + cross" "random + clusters" "random + large clusters" "random + clusters + cross" "random + clusters + large clusters + cross"
-6
+8
 
 SLIDER
 17
@@ -2313,7 +2330,7 @@ singleRocks
 singleRocks
 0
 500
-365
+370
 5
 1
 NIL
@@ -2328,7 +2345,7 @@ clusterRocks
 clusterRocks
 0
 50
-40
+30
 5
 1
 NIL
@@ -2343,7 +2360,7 @@ largeClusterRocks
 largeClusterRocks
 0
 20
-11
+8
 1
 1
 NIL
@@ -2356,7 +2373,7 @@ SWITCH
 190
 pen-down?
 pen-down?
-0
+1
 1
 -1000
 
@@ -2483,7 +2500,7 @@ percentchancetoavoid
 percentchancetoavoid
 0
 100
-34
+2
 1
 1
 NIL
@@ -2554,8 +2571,23 @@ Pstimer
 Pstimer
 0
 500
-150
+100
 25
+1
+NIL
+HORIZONTAL
+
+SLIDER
+927
+601
+1099
+634
+bepstimer
+bepstimer
+0
+100
+50
+1
 1
 NIL
 HORIZONTAL
