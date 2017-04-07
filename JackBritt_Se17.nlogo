@@ -36,22 +36,13 @@
      ;the cordinates of a resource within sanic's radius
      oldpX
      oldpY
-     
+    
      ;means a resource is within sanic's radius
      target
      
      ;a patch that had a resource on it but no longer does
      collect
 
- ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ;;;;;;;;;
- ;;John;;;
- ;;;;;;;;; 
-     joldpx
-     joldpy
-     
-     jtarget
-     Npheromone
      
  ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ;;;;;;;;;;
@@ -84,6 +75,8 @@
      ptimer
      satarget
      beptimer
+    
+     
     ]  
   
   
@@ -91,74 +84,13 @@
   globals [
   
   ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ;;;;;;;;;
- ;;Sanic;;
- ;;;;;;;;;
-  
-    ;the coordinates of were the sanic left the spiral
-    eoldx
-    eoldy
-    
-    ;amount of steps taken by the sanic
-    cSteps
-    cMaxsteps
-    
-    ;representation of the sanic direction or heading
-    savepdo
-    
-    ;show if the variable for sanic is true or false
-    msavep
-    msearching
-    mreturning
-    mhunting
- ;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ;;;;;;;;;;
- ;;Zen;;
- ;;;;;;;;;;
-    ;the coordinates of where the Zen left the spiral
-    teoldx
-    teoldy
-    
-    ;amount of steps taken by the Zen
-    tcSteps
-    tcMaxsteps
-    
-    ;representation of the Zen direction or heading
-    tsavepdo
-    
-    ;show if the variable for Zen is true or false
-    tmsavep
-    tmsearching
-    tmreturning
-    tmhunting
-    tmstart
-    
-    numberofRocks
-    
-;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-;;;;;;;;;;
-;;sara;;;;
-;;;;;;;;;;  
-
-   
-    msacluster
-    mclstrnd
-    mrnum
-
-;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-;;;;;;;;;;
-;;becky;;;
-;;;;;;;;;;  
-     mbecluster
-    bemclstrnd
-    bemrnum
+ 
   ]
-  
   breed [becky robot]         ; the names of our robots 
   breed [sara robot]
-  breed [halley robot]
+
   breed [sanic robot]
-  breed [john robot]
+
   breed [zen robot]
   
   
@@ -179,10 +111,7 @@
     becluster
     beclstrnd
   ]
-  halley-own[ 
-   H-returning
-   H-searching
-  ]
+  
   sanic-own[ 
     ;if sanic is going back to base (base is 0, 0)
     returning  
@@ -199,7 +128,8 @@
     ;where sanic left the spiral
     oldX
     oldY
-    
+    eoldx
+    eoldy
     ;when sanic is going back to where it left the spiral
     saveP
     
@@ -213,12 +143,7 @@
    hunting
    
   ]
-  john-own[ 
-    jreturning
-    jsearching
-    jRestart
-    
-  ]
+ 
    Zen-own[ 
     ;if Zen is going back to base (base is 0, 0)
     treturning  
@@ -235,7 +160,8 @@
     ;where Zen left the spiral
     toldX
     toldY
-    
+    teoldx
+    teoldy
     ;when Zen is going back to where it left the spiral
     tsaveP
     
@@ -296,7 +222,7 @@ if pcolor = yellow[
 set target false
 
 
-set jtarget false
+
 if collect[
  set rock false
 ]
@@ -325,8 +251,7 @@ ask becky [set becluster false
 ;spawns each robot
 birth-becky
 birth-sara
-birth-halley
-birth-john
+
 birth-zen
 birth-sanic
 
@@ -339,6 +264,7 @@ end
 ;;;;;;;;;;;;;
 ;;MAKE sara;;
 ;;;;;;;;;;;;;
+;this robot is almost exactly the same as becky
 to birth-sara
   create-sara 1[
    set size 6
@@ -375,22 +301,6 @@ to birth-becky
 end
 
 
-;------------------------------------------------------------------------------------
-;;;;;;;;;;;;;;;
-;;MAKE halley;;
-;;;;;;;;;;;;;;;
-to birth-halley
-  create-halley 1[
-  set size 6
-  set shape "robot"
-  set color sky
-  set H-searching true
-  set H-returning false
-  set label "halley"
-  ]
-  
-end
-
 
  ;------------------------------------------------------------------------------------
 ;;;;;;;;;;;;;;
@@ -419,28 +329,13 @@ to birth-sanic
 end
 
 
- ;------------------------------------------------------------------------------------
-;;;;;;;;;;;;;
-;;MAKE JOHN;;
-;;;;;;;;;;;;;
-to birth-john
-  create-john 1[
-  set size 6
-  set shape "robot"
-  set color red
-  set jsearching true
-  set heading random 360
-  set jreturning false
-  set label "John"
-  ]
-  
-end
 
 
  ;------------------------------------------------------------------------------------
 ;;;;;;;;;;;;;;;
 ;;MAKE Zen;;
-;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;
+;zen is almost the same as sanic
 to birth-Zen
   create-Zen 1[
    set size 6
@@ -478,40 +373,21 @@ to robot-control
  ask patches[
    set ptimer (ptimer - 1)
  if ptimer = 0 [
-   if pcolor != pink [set pcolor basecolor]
-   if pcolor = pink [set pcolor red]
+    set pcolor basecolor
+  
  ]
  
     set beptimer (beptimer - 1)
  if beptimer = 0 [
-   if pcolor != pink [set pcolor basecolor]
-   if pcolor = pink [set pcolor red]
+   set pcolor basecolor
+  
  ]
  ]
  
  
  ;makes these variables show on the moniters in the interface tab, 
  ;if the number is 1 then the variable is true, if the number is 2 then the variable is false
- ask sanic[                       
-if (savep = true)
-[set msavep  1]
-if searching = true
-[set msearching  1]
-if returning = true
-[set mreturning  1]
-if hunting = true
-[set mhunting  1]
-    if savep = false
-[set msavep  2]
-if searching = false
-[set msearching  2]
-if returning = false
-[set mreturning 2]
-if hunting = false
-[set mhunting  2]
-    
- ]
-
+ 
 
 
 
@@ -538,16 +414,16 @@ if collect[
   
  set rock false
 set target false
-set jtarget false
+
 
 ]
 if pcolor = baseColor[
   set target false
   set rock false
-  set jtarget false]
+]
 ]
 
-ask john[J-move]
+
 
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -587,20 +463,7 @@ if pcolor = baseColor[
 ]
 
 
-;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-;;;;;;;;;;
-;;Halley;;
-;;;;;;;;;;
 
-
- ;;makes halley move in a random pattern
- ask halley 
- [
- if H-searching [lookforrocks]
- if H-returning [H-go-home]
-  moveit
- ]
- 
  
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ;;;;;;;;;;
@@ -608,22 +471,7 @@ if pcolor = baseColor[
 ;;;;;;;;;;
  ;makes these variables show on the moniters in the interface tab, 
  ;if the number is 1 then the variable is true, if the number is 2 then the variable is false
- ask becky
-[if beclstrnd
- [set bemclstrnd 1]
  
-  if beclstrnd = false
-[set bemclstrnd  2]
- 
-  if becluster
- [set mbecluster 1]
- 
-  if becluster = false
-[set mbecluster  2]
-
-
-set bemrnum bernum
-]
 
 ;tells the robot to start moving and looking for rocks
 ask becky[be-move]
@@ -639,22 +487,7 @@ ask sara[Sa-move]
 
 ;makes these variables show on the moniters in the interface tab, 
 ;if the number is 1 then the variable is true, if the number is 2 then the variable is false
-ask sara
-[if clstrnd
- [set mclstrnd 1]
- 
-  if clstrnd = false
-[set mclstrnd  2]
- 
-  if sacluster
- [set msacluster 1]
- 
-  if sacluster = false
-[set msacluster  2]
 
-
-set mrnum rnum
-]
  
 
 ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -814,8 +647,10 @@ end
                                              
    
  to S-get-rocks
+  
    ask sanic[
    if hunting = false[
+     ;saves coordinates for when it left the spiral
        set eoldx oldX
 set eoldy oldY
    ]
@@ -829,6 +664,7 @@ if searching = true or hunting = false [
       set target true 
      ]
      ]
+     ;saves the coodinates of a rock
       set oldpX ([pxcor] of one-of patches with [target = true] in-radius 2)
       set oldpY ([pycor] of one-of patches with [target = true] in-radius 2)      ;tries to get coordinates o a patch
   
@@ -839,7 +675,7 @@ if searching = true or hunting = false [
  
 
  ask (patch oldpX oldpY) [
-     
+     ;picks up rock
          set pcolor basecolor
          set target false
          set rock false
@@ -861,9 +697,9 @@ if searching = true or hunting = false [
    ]
   
    [   
-    
+    ;faces rock
      facexy oldpX oldpY  
-                                ;how do i get it to face the patch
+                              
      ]
    ]
 ]
@@ -884,11 +720,14 @@ end
 ;;GO HOME;;
 ;;;;;;;;;;;
  
+ 
+ 
+   ;returns the rock home
+  
  to S-go-home
     
    
-  
-  
+
   if shape = "robot with rock"[
   
    ifelse pxcor = 0 and pycor = 0 [
@@ -923,8 +762,7 @@ end
 ;;;;;;;;;;;
  
  to S-go-fast
-   set cSteps  steps
-   set cMaxsteps  maxsteps 
+   
     if restarting [
       set searching false 
       S-restart]
@@ -942,7 +780,7 @@ end
       ]
    
   
-  
+  ;this is the robots basic search pattern
    if searching[
      
      left random 15
@@ -950,9 +788,7 @@ end
      
      forward 1
      
-     if pcolor != yellow[ 
-       set pcolor red]
-    
+ 
   ifelse steps > 0 [
   
      
@@ -972,9 +808,10 @@ end
    ifelse savepd = 4
    [set savepd 1]
    [set savepd savepd + 1]
-   set savepdo savepd
+   
    ]
   ]
+   ;makes the robot face the right way
    if hunting and not returning [
             if (savepd = 1)[
            face patch (pxcor) (-50) 
@@ -1002,7 +839,7 @@ end
 
 to S-restart
 
-
+;when robot hits outside walls it restarts
 ifelse pxcor = 0 and pycor = 0 [
      set restarting false
      set shape "robot"
@@ -1020,7 +857,7 @@ end
 
 to S-savec
   
-
+;goes back to where the robot left the spiral
    if (saveP = true)[
        ifelse (pxcor < eoldX + .85 and pxcor > eoldX - .85) and (pycor < eoldY + .85 and pycor > eoldY - .85)[
          
@@ -1191,8 +1028,7 @@ end
 ;;;;;;;;;;;
  
  to tS-go-fast
-   set tcSteps  tsteps
-   set tcMaxsteps  tmaxsteps 
+  
     if trestarting [
       set tsearching false 
       tS-restart]
@@ -1218,8 +1054,7 @@ end
      
      forward 1
      
-     if pcolor != yellow[ 
-       set pcolor red]
+     
     
   ifelse tsteps > 0 [
   
@@ -1240,7 +1075,7 @@ end
    ifelse tsavepd = 4
    [set tsavepd 1]
    [set tsavepd tsavepd + 1]
-   set tsavepdo tsavepd
+  
    ]
   ]
    if thunting and not treturning [
@@ -1329,249 +1164,6 @@ end
 
 
 
-;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-;;;;;;;;;;
-;;Halley;;
-;;;;;;;;;;
-
-;--------------------------------------------------------------------------------------------------
-;;;;;;;;;;;
-;;GO HOME;;
-;;;;;;;;;;;
-
-   to H-go-home
-ifelse pcolor = green
-[
-  set shape "robot"
-  set H-searching true
-  set H-returning false 
-]
-[
-  facexy 0 0
-]
-
-   end
-   
-;--------------------------------------------------------------------------------------------------
-;;;;;;;;;;
-;;MOVEIT;;
-;;;;;;;;;;
-
-  to moveit
-  
-  right random angle
-  left random angle
-  if not can-move? 1 [facexy 0 0]
-  fd 1
-  
-  end
-
-;-----------------------------------------------------------------------------------------------------
-;;;;;;;;;;;;;;;;
-;;lookforrocks;;
-;;;;;;;;;;;;;;;;
-
-to lookforrocks
-  ;; searching for rocks
-if ticks > 6 [ask halley[   ;ensures halley does not stall when picking up a rock within 2 patches around them
-    
- if (any? patches with [rock = true] in-radius 2)[
-    
-    set pcolor basecolor
-    ask halley [
-      set H-searching false
-      set H-returning true
-      set shape "robot with rock"
-    ]
-  ]
-]
-]
-    end
-
-
-
-
-
-
-
-
-
-
-
-
-;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-;;;;;;;;
-;;John;;
-;;;;;;;;
-
-
-;--------------------------------------------------------------------------------------------------
-;;;;;;;;
-;;move;;
-;;;;;;;;
-
-to J-move
-  
-  if jreturning [J-go-home]
- 
- 
-  if not can-move? 1 [
-    ask john [
-      set jrestart true
-      facexy 0 0
-      fd 1
-      set jrestart false
-    ]
-  ]
-    
-if jsearching[
- 
-     
-    ]
-    
-   
-
-   ask john[  
-      
-      ]
-   
-    
-    
-     
-   if jsearching and not jreturning[
-    
-     
-      if (ticks > 2000) [
-     if [pcolor] of (patch-ahead 1) = red [
-       if random 100 < percentchancetoavoid[
-       right 90]
-       
-     ]
-     
-    ]
-    right random jmaxangle
-     left random jmaxangle
-
-     
-     fd 1
-   ]
-     if jsearching and not jreturning [J-look-for-rocks]
-   
-
-    end
-
-
-
-
-;--------------------------------------------------------------------------------------------------
-;;;;;;;;;;;;;;;;
-;;lookforrocks;;
-;;;;;;;;;;;;;;;;
-
-
-to J-look-for-rocks
-  
-  
-  
-   ask john[ 
-     if ticks > 5[
-  
-if jsearching = true[
-    if (any? patches with [rock = true] in-radius 2)[
-  
-
-  
-      if not any? patches with [jtarget = true] in-radius 2 [
-     ask one-of patches with [pcolor = yellow] in-radius 2[ 
-      set jtarget true 
-     ]
-      ]
-      set joldpX ([pxcor]of one-of patches with [jtarget = true] in-radius 2)
-      set joldpY ([pycor]of one-of patches with [jtarget = true] in-radius 2)      ;tries to get coordinates o a patch
-  
-  
-  
-   ifelse (any? john-on patches with [jtarget = true]) [
-
- 
-
- ask (patch joldpX joldpY) [
-     
-         set pcolor basecolor
-         set jtarget false
-         set rock false
-         set collect true]
- 
-         
-         ask john [
-           
-           set shape "robot with rock"
-           set jsearching false
-           set jreturning true
-           j-go-home
-          
-         ]
-         
-       
- 
-  
-   ]
-  
-   [   
-    
-     facexy joldpX joldpY  
-                                ;how do i get it to face the patch
-     ]
-   ]
-]
-   ]
-]
-    
-   
-    
-       
-  
-  
-  
-end
-
-
-
-;--------------------------------------------------------------------------------------------------
-;;;;;;;;;;;;;;;;
-;;go-home;;
-;;;;;;;;;;;;;;;;
-
-to J-go-home
-  
-  ask john[
-    
-    ifelse pxcor = 0 and pycor = 0 [
-    
-     set jreturning false
-     set shape "robot"
-     set jsearching true
-    ]
-  
-   
-   [
-     facexy 0 0
-     
-      fd 1]
-   
-   
-  ]
-  
-    
-  
-end
-
-
-
-
-
-
-
 
 
 
@@ -1606,16 +1198,15 @@ to Sa-move
   ]
     
     
-      if (any? patches with [pcolor = 104] in-radius 2)  [ 
+      if (any? patches with [pcolor = blue] in-radius 2)  [ 
       
       if pcolor != yellow
       and pcolor != green[
      sagonetimer
-       ifelse pcolor = red or pcolor = 134[
-         set pcolor 124]
-       [
-       set pcolor 104
-       ]
+       
+       
+       set pcolor blue
+       
        ]
       ]
      
@@ -1626,11 +1217,9 @@ to Sa-move
       if pcolor != yellow
       and pcolor != green
      [ 
-       ifelse pcolor = red or pcolor = 134[
-         set pcolor 124]
-       [
-       set pcolor 104
-       ]
+       
+       set pcolor blue
+       
        ]
       ]
     ]
@@ -1638,12 +1227,12 @@ to Sa-move
      
    if sasearching and not sareturning[
     
- ifelse ((any? patches with [pcolor = 104] in-radius 2) or (any? patches with [pcolor = 124] in-radius 2))[
+ ifelse ((any? patches with [pcolor = blue] in-radius 2) or (any? patches with [pcolor = blue] in-radius 2))[
  
      
-    face one-of patches in-radius 2 with [(pcolor = 104) or (pcolor = 124)] with-max [distancexy 0 0]
-    if ([pcolor = 104] of patch-here) [set pcolor 114]
-    if ([pcolor = 124] of patch-here) [set pcolor 134]
+    face one-of patches in-radius 2 with [(pcolor = blue) or (pcolor = blue)] with-max [distancexy 0 0]
+    if ([pcolor = blue] of patch-here) [set pcolor violet]
+    if ([pcolor = blue] of patch-here) [set pcolor pink]
  ]
     
    
@@ -1732,11 +1321,10 @@ set sacluster true
       if pcolor != yellow
       and pcolor != green
      [ 
-       ifelse pcolor = red[
-         set pcolor 124]
-       [
-       set pcolor 104
-       ]
+      
+       
+       set pcolor blue
+       set ptimer pstimer
        ]
       ]
     ]
@@ -1784,8 +1372,8 @@ to sa-go-home
     if clstrnd[
         ask patch-here[
       if pcolor != yellow
-      and pcolor != red[ 
-      if pcolor = 104 or pcolor = 124[ set pcolor basecolor]
+      [ 
+      if pcolor = blue or pcolor = blue[ set pcolor basecolor]
       ]
         ]
     ]
@@ -1862,43 +1450,40 @@ to be-move
     
     
       if (any? patches with [pcolor = blue] in-radius 2)  [ 
-      
+      ;makes the robot lay pheremone
       if pcolor != yellow
       and pcolor != green[
      begonetimer
-       ifelse pcolor = red or pcolor = pink[
-         set pcolor magenta]
-       [
+     
+       
        set pcolor blue
        ]
        ]
-      ]
+      
      
     
-    
+    ; in the mode where it has reached a cluster
     if becluster [ 
       ask patch-here[
       if pcolor != yellow
       and pcolor != green
      [ 
-       ifelse pcolor = red or pcolor = pink[
-         set pcolor magenta]
-       [
+     
        set pcolor blue
        ]
        ]
       ]
-    ]
+    
     
      
    if besearching and not bereturning[
     
- ifelse ((any? patches with [pcolor = blue] in-radius 2) or (any? patches with [pcolor = magenta] in-radius 2))[
+ ifelse ((any? patches with [pcolor = blue] in-radius 2) )[
  
      
-    face one-of patches in-radius 2 with [(pcolor = blue) or (pcolor = magenta)] with-max [distancexy 0 0]
+    face one-of patches in-radius 2 with [(pcolor = blue) ] with-max [distancexy 0 0]
     if ([pcolor = blue] of patch-here) [set pcolor violet]
-    if ([pcolor = magenta] of patch-here) [set pcolor pink]
+    
  ]
     
    
@@ -1975,23 +1560,22 @@ if besearching = true[
            set shape "robot with rock"
            set besearching false
            set bereturning true
-           
+           ;this is the number of rocks within reach of the robot
           set bernum (count ( [patches with [pcolor = yellow] in-radius 1.9] of patch-here )  )
 if (bernum > 0) 
 [
 
-
+;first patch of pheromone after a cluster is reached
 set becluster true
  if becluster [ 
       ask patch-here[
       if pcolor != yellow
       and pcolor != green
      [ 
-       ifelse pcolor = red[
-         set pcolor magenta]
-       [
+     
+       
        set pcolor blue
-       ]
+       set ptimer pstimer
        ]
       ]
     ]
@@ -2035,13 +1619,14 @@ to be-go-home
   if bereturning[
   ask becky[
     
-    
+    ;helped limit confusion
     if beclstrnd[
         ask patch-here[
       if pcolor != yellow
-      and pcolor != red[ 
-      if pcolor = blue or pcolor = magenta[ set pcolor basecolor]
-      ]
+      [ 
+      if pcolor = blue[ set pcolor violet 
+        ]
+    ]
         ]
     ]
 
@@ -2065,7 +1650,8 @@ to be-go-home
    
   ]
   ]
-    
+  
+  
   
 end
 
@@ -2373,108 +1959,9 @@ SWITCH
 190
 pen-down?
 pen-down?
-1
+0
 1
 -1000
-
-MONITOR
-8
-392
-65
-437
-eoldx
-eoldx
-17
-1
-11
-
-MONITOR
-70
-392
-127
-437
-eoldy
-eoldy
-17
-1
-11
-
-MONITOR
-8
-443
-65
-488
-steps
-csteps
-17
-1
-11
-
-MONITOR
-71
-443
-143
-488
-NIL
-cmaxsteps
-17
-1
-11
-
-MONITOR
-133
-394
-198
-439
-savepdx
-savepdo
-17
-1
-11
-
-MONITOR
-10
-495
-67
-540
-savep
-tmsavep
-17
-1
-11
-
-MONITOR
-73
-495
-139
-540
-searching
-msearching
-17
-1
-11
-
-MONITOR
-6
-545
-70
-590
-returning
-mreturning
-17
-1
-11
-
-MONITOR
-75
-543
-132
-588
-hunting
-mhunting
-17
-1
-11
 
 SLIDER
 298
@@ -2486,21 +1973,6 @@ jmaxangle
 0
 135
 45
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-299
-572
-472
-605
-percentchancetoavoid
-percentchancetoavoid
-0
-100
-2
 1
 1
 NIL
@@ -2530,7 +2002,7 @@ bemaxangle
 bemaxangle
 0
 100
-44
+43
 1
 1
 NIL
@@ -2545,22 +2017,11 @@ samaxangle
 samaxangle
 0
 100
-43
+47
 1
 1
 NIL
 HORIZONTAL
-
-MONITOR
-161
-490
-219
-535
-tsavepd
-tsavepdo
-17
-1
-11
 
 SLIDER
 697
@@ -2571,7 +2032,7 @@ Pstimer
 Pstimer
 0
 500
-100
+75
 25
 1
 NIL
@@ -2586,7 +2047,7 @@ bepstimer
 bepstimer
 0
 100
-50
+75
 1
 1
 NIL
